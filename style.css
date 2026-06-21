@@ -5,189 +5,202 @@
 }
 
 :root {
+    --gar-primary: #FF6B35;
+    --gar-secondary: #FF8C42;
+    --gar-dark: #1a1a2e;
+    --gar-darker: #16213e;
     --gar-gold: #FFD700;
-    --gar-dark: #1a1a1a;
-    --gar-darker: #0d0d0d;
-    --gar-accent: #FF6B35;
-    --gar-green: #00FF88;
-    --gar-blue: #00D4FF;
-    --gar-purple: #B44FFF;
+    --gram-primary: #0088CC;
+    --gram-secondary: #00A3E0;
+    --gram-light: #00CCFF;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(255, 255, 255, 0.1);
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--gar-darker);
-    color: #fff;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+    color: var(--text-light);
     min-height: 100vh;
     overflow-x: hidden;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
-    background-image: 
-        radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.05) 0%, transparent 50%);
 }
 
 .container {
     max-width: 420px;
     margin: 0 auto;
-    padding: 15px;
+    padding: 20px;
 }
 
-/* Шапка */
-.header {
-    display: flex;
-    justify-content: space-between;
+/* Логотип GAR */
+.gar-logo {
+    position: relative;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--gar-primary), var(--gram-primary));
+    border-radius: 50%;
+    display: inline-flex;
     align-items: center;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 107, 53, 0.1));
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 15px;
-    padding: 15px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(0,136,204,0.3), transparent);
+    border-radius: 50%;
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Информация о майнере */
+.miner-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    border-radius: 12px;
     margin-bottom: 20px;
     backdrop-filter: blur(10px);
 }
 
-.miner-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
 .miner-avatar {
     font-size: 35px;
-    animation: minerBob 2s ease-in-out infinite;
+    animation: shake 3s ease-in-out infinite;
 }
 
 .miner-name {
     font-size: 16px;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--gar-gold), var(--gar-accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--gar-primary);
 }
 
-.miner-rank {
+.miner-level {
     font-size: 12px;
-    color: var(--gar-gold);
-    opacity: 0.7;
-}
-
-.network-status {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: var(--gar-green);
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--gar-green);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-/* Баланс GAR */
-.balance-section {
-    text-align: center;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 107, 53, 0.1));
-    border: 2px solid rgba(255, 215, 0, 0.3);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-.gar-logo {
-    position: relative;
-    display: inline-block;
-}
-
-.gar-coin {
-    font-size: 60px;
-    animation: coinFloat 3s ease-in-out infinite;
-}
-
-.gar-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
-    border-radius: 50%;
-    animation: glow 2s ease-in-out infinite;
+    color: var(--gar-secondary);
+    margin-top: 2px;
 }
 
 .balance-display {
-    margin: 15px 0;
+    margin-left: auto;
+    text-align: right;
 }
 
-.balance-amount {
-    font-size: 42px;
-    font-weight: bold;
-    background: linear-gradient(45deg, var(--gar-gold), #FFA500);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.balance-currency {
-    font-size: 18px;
-    color: var(--gar-gold);
-    margin-top: 5px;
-}
-
-.balance-usd {
+.gar-balance-mini,
+.gram-balance-mini {
     font-size: 14px;
-    color: #888;
-    margin: 5px 0;
+    margin: 2px 0;
 }
 
-.gar-rate {
-    font-size: 11px;
-    color: var(--gar-green);
-    background: rgba(0, 255, 136, 0.1);
-    padding: 5px 10px;
-    border-radius: 20px;
-    display: inline-block;
+.gar-icon-mini {
+    color: var(--gar-gold);
 }
 
-/* Статистика */
-.stats-grid {
+.gram-icon-mini {
+    color: var(--gram-light);
+}
+
+/* Балансы */
+.balances-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 20px;
 }
 
-.stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
+.balance-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 12px;
+    padding: 15px;
     text-align: center;
-    transition: all 0.3s;
 }
 
-.stat-card:hover {
-    background: rgba(255, 215, 0, 0.1);
-    transform: translateY(-2px);
+.gar-card {
+    border-color: rgba(255, 107, 53, 0.3);
 }
 
-.stat-icon {
-    font-size: 24px;
+.gram-card {
+    border-color: rgba(0, 136, 204, 0.3);
+}
+
+.balance-icon {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.balance-label {
+    font-size: 12px;
+    color: #aaa;
     margin-bottom: 5px;
+}
+
+.balance-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.gar-card .balance-value {
+    background: linear-gradient(45deg, var(--gar-primary), var(--gar-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gram-card .balance-value {
+    color: var(--gram-light);
+}
+
+.balance-usd {
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+}
+
+/* Статистика */
+.mining-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 .stat-label {
     font-size: 11px;
-    color: #888;
-    margin-bottom: 3px;
+    color: #aaa;
+    margin-bottom: 5px;
 }
 
 .stat-value {
@@ -198,133 +211,121 @@ body {
 
 /* Прогресс блока */
 .block-progress {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 10px;
 }
 
 .progress-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: var(--gar-gold);
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--gar-secondary);
 }
 
 .progress-bar {
     height: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 107, 53, 0.1);
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--gar-gold), var(--gar-accent));
+    background: linear-gradient(90deg, var(--gar-primary), var(--gram-primary));
     border-radius: 4px;
-    transition: width 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
+    transition: width 0.5s;
+    animation: progressGlow 2s ease-in-out infinite;
 }
 
 .block-reward {
+    text-align: center;
     font-size: 12px;
-    color: var(--gar-green);
-    text-align: right;
+    color: var(--gar-gold);
 }
 
 /* Кнопка майнинга */
-.mining-area {
+.miner-area {
+    position: relative;
     text-align: center;
     margin-bottom: 30px;
-    position: relative;
 }
 
 .mine-button {
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    border: 3px solid var(--gar-gold);
-    background: linear-gradient(135deg, #2a1a0a, #3a2a1a);
+    border: 3px solid var(--gar-primary);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1a1a 100%);
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s;
-    box-shadow: 
-        0 0 30px rgba(255, 215, 0, 0.3),
-        inset 0 0 30px rgba(255, 215, 0, 0.1);
+    transition: all 0.2s;
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.3);
 }
 
 .mine-button:active {
-    transform: scale(0.9);
-    box-shadow: 
-        0 0 50px rgba(255, 215, 0, 0.6),
-        inset 0 0 50px rgba(255, 215, 0, 0.3);
+    transform: scale(0.92);
+    box-shadow: 0 0 60px rgba(255, 107, 53, 0.6), 0 0 80px rgba(0, 136, 204, 0.3);
+    border-color: var(--gar-gold);
 }
 
-.button-content {
-    position: relative;
-    z-index: 1;
+.mine-button-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-.button-icon {
+.mine-icon {
     font-size: 45px;
-    animation: mineSpin 2s linear infinite;
+    transition: transform 0.2s;
 }
 
-.mine-button:active .button-icon {
-    animation: mineSpin 0.5s linear infinite;
+.mine-button:active .mine-icon {
+    transform: rotate(-20deg) scale(1.2);
 }
 
-.button-text {
+.mine-text {
     font-size: 14px;
     font-weight: bold;
-    color: var(--gar-gold);
-    margin-top: 5px;
+    color: var(--gar-primary);
 }
 
-.button-subtext {
-    font-size: 10px;
-    color: rgba(255, 215, 0, 0.5);
-}
-
-.button-particles {
+.mine-particles {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .particle {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: var(--gar-gold);
-    border-radius: 50%;
-    animation: particleFloat 2s ease-in-out infinite;
+    color: var(--gar-gold);
+    font-size: 12px;
+    opacity: 0;
 }
 
-.particle:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
-.particle:nth-child(2) { top: 60%; right: 20%; animation-delay: 0.5s; }
-.particle:nth-child(3) { bottom: 20%; left: 50%; animation-delay: 1s; }
+.mine-button:active .particle:nth-child(1) {
+    animation: particleFly1 0.6s ease-out forwards;
+}
 
-/* Эффект майнинга */
-.mining-effect {
+.mine-button:active .particle:nth-child(2) {
+    animation: particleFly2 0.8s ease-out forwards;
+}
+
+.mine-button:active .particle:nth-child(3) {
+    animation: particleFly3 0.7s ease-out forwards;
+}
+
+/* Эффект при майнинге */
+.mine-effect {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -334,246 +335,400 @@ body {
     color: var(--gar-gold);
     pointer-events: none;
     opacity: 0;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.mining-effect.show {
+.mine-effect.show {
     animation: flyUp 1s ease-out forwards;
 }
 
-/* Кнопка буста */
-.boost-button {
-    margin-top: 15px;
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 107, 53, 0.1));
-    border: 1px solid var(--gar-accent);
-    color: var(--gar-accent);
-    padding: 10px 25px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.boost-button:hover {
-    background: rgba(255, 107, 53, 0.3);
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
-}
-
-.boost-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 /* Секции */
-.section {
+.equipment-section,
+.upgrades-section,
+.deposit-section {
     margin-bottom: 25px;
 }
 
-.section-title {
-    font-size: 18px;
-    color: var(--gar-gold);
+h3 {
+    color: var(--gar-primary);
     margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    font-size: 18px;
+    border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+    padding-bottom: 8px;
 }
 
-/* Оборудование */
-.equipment-item,
-.upgrade-item {
+/* GRAM информация */
+.gram-info {
+    background: rgba(0, 136, 204, 0.1);
+    border: 1px solid rgba(0, 136, 204, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: var(--gram-light);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    transition: all 0.3s;
+    gap: 8px;
 }
 
-.equipment-item:hover,
-.upgrade-item:hover {
-    background: rgba(255, 215, 0, 0.08);
+.info-icon {
+    font-size: 16px;
 }
 
-.equipment-left,
-.upgrade-left {
+.wallet-address {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 136, 204, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    word-break: break-all;
+}
+
+.address-text {
+    flex: 1;
+    color: var(--gram-light);
+    font-family: monospace;
+}
+
+.copy-button {
+    background: var(--gram-primary);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* Карточки оборудования и улучшений */
+.equipment-card,
+.upgrade-card {
     display: flex;
     align-items: center;
     gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+}
+
+.equipment-card:hover,
+.upgrade-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(3px);
 }
 
 .equipment-icon,
 .upgrade-icon {
-    font-size: 30px;
+    font-size: 32px;
     min-width: 40px;
     text-align: center;
+}
+
+.equipment-info,
+.upgrade-info {
+    flex: 1;
 }
 
 .equipment-name,
 .upgrade-name {
     font-weight: bold;
-    color: #fff;
+    color: var(--gar-primary);
     font-size: 14px;
 }
 
-.equipment-spec,
-.upgrade-desc {
+.equipment-description,
+.upgrade-description {
     font-size: 11px;
-    color: var(--gar-green);
+    color: #aaa;
     margin-top: 3px;
 }
 
-.equipment-count {
+.equipment-stats {
     font-size: 12px;
     color: var(--gar-gold);
-    margin-top: 2px;
+    margin-top: 3px;
+    font-weight: bold;
 }
 
-.equipment-buy,
-.upgrade-buy {
-    background: linear-gradient(45deg, var(--gar-gold), #FFA500);
-    color: #000;
+/* Кнопки покупки */
+.buy-button,
+.upgrade-button {
     border: none;
-    padding: 8px 15px;
+    padding: 8px 14px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
     font-size: 12px;
     transition: all 0.3s;
-    text-align: center;
+    white-space: nowrap;
 }
 
-.equipment-buy:disabled,
-.upgrade-buy:disabled {
-    background: #333;
-    color: #666;
+.gar-buy {
+    background: linear-gradient(45deg, var(--gar-primary), var(--gar-accent));
+    color: white;
+}
+
+.gram-buy {
+    background: linear-gradient(45deg, var(--gram-primary), var(--gram-light));
+    color: white;
+}
+
+.buy-button:disabled,
+.upgrade-button:disabled {
+    background: #444 !important;
+    color: #888;
     cursor: not-allowed;
 }
 
-.equipment-buy:not(:disabled):hover,
-.upgrade-buy:not(:disabled):hover {
+.buy-button:not(:disabled):hover,
+.upgrade-button:not(:disabled):hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
 }
 
-.buy-price {
-    display: block;
-    font-size: 11px;
+.gram-buy:not(:disabled):hover {
+    box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
 }
 
-.buy-action {
-    display: block;
-    font-size: 14px;
+/* Пополнение GRAM */
+.deposit-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 136, 204, 0.3);
+    border-radius: 10px;
+    padding: 15px;
 }
 
-/* История транзакций */
-.transactions-container {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.transaction-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.transaction-icon {
-    font-size: 20px;
-}
-
-.transaction-info {
-    flex: 1;
-}
-
-.transaction-name {
+.deposit-info {
+    margin-bottom: 15px;
     font-size: 13px;
-    color: #fff;
 }
 
-.transaction-time {
+.deposit-address {
+    color: var(--gram-light);
+    font-family: monospace;
     font-size: 11px;
-    color: #666;
+    margin-top: 5px;
+    word-break: break-all;
 }
 
-.transaction-amount {
+.deposit-amounts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.deposit-btn {
+    background: linear-gradient(45deg, var(--gram-primary), var(--gram-light));
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
     font-weight: bold;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+
+.deposit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 136, 204, 0.3);
+}
+
+/* Лог */
+.mining-log {
+    margin-bottom: 20px;
+}
+
+.log-container {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    max-height: 180px;
+    overflow-y: auto;
+    font-size: 12px;
+}
+
+.log-entry {
+    color: var(--gar-secondary);
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+    animation: fadeIn 0.5s;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: #1a1a2e;
+    border: 2px solid var(--gram-primary);
+    border-radius: 15px;
+    padding: 20px;
+    max-width: 350px;
+    width: 90%;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    color: var(--gram-light);
+    border: none;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.payment-details {
+    margin-bottom: 15px;
     font-size: 14px;
 }
 
-.transaction-amount.positive {
-    color: var(--gar-green);
+.payment-address {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.address-highlight {
+    color: var(--gram-light);
+    font-family: monospace;
+    font-size: 11px;
+    margin-top: 5px;
+    word-break: break-all;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-btn,
+.cancel-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.confirm-btn {
+    background: linear-gradient(45deg, var(--gram-primary), var(--gram-light));
+    color: white;
+}
+
+.cancel-btn {
+    background: #444;
+    color: white;
+}
+
+.confirm-btn:hover,
+.cancel-btn:hover {
+    transform: translateY(-2px);
 }
 
 /* Анимации */
-@keyframes minerBob {
+@keyframes logoFloat {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+    50% { transform: translateY(-10px); }
 }
 
-@keyframes coinFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-15px) rotate(10deg); }
-    75% { transform: translateY(-5px) rotate(-10deg); }
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
 }
 
-@keyframes mineSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    5% { transform: rotate(-15deg); }
+    10% { transform: rotate(15deg); }
+    15% { transform: rotate(-10deg); }
+    20% { transform: rotate(0deg); }
+}
+
+@keyframes progressGlow {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
 }
 
 @keyframes flyUp {
     0% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%, -50%);
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -150%) scale(1.5);
+        transform: translate(-50%, -130px);
     }
 }
 
-@keyframes glow {
-    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+@keyframes particleFly1 {
+    0% { opacity: 1; transform: translate(40px, 40px); }
+    100% { opacity: 0; transform: translate(80px, -40px); }
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+@keyframes particleFly2 {
+    0% { opacity: 1; transform: translate(-40px, 20px); }
+    100% { opacity: 0; transform: translate(-80px, -60px); }
 }
 
-@keyframes particleFloat {
-    0%, 100% { transform: translate(0, 0); opacity: 0; }
-    50% { opacity: 1; }
-    25% { transform: translate(10px, -10px); }
-    75% { transform: translate(-10px, 10px); }
+@keyframes particleFly3 {
+    0% { opacity: 1; transform: translate(0px, 60px); }
+    100% { opacity: 0; transform: translate(60px, -20px); }
 }
 
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 /* Скроллбар */
-.transactions-container::-webkit-scrollbar {
+.log-container::-webkit-scrollbar {
     width: 4px;
 }
 
-.transactions-container::-webkit-scrollbar-track {
-    background: rgba(255, 215, 0, 0.1);
+.log-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.transactions-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 215, 0, 0.3);
+.log-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 53, 0.4);
     border-radius: 2px;
 }
