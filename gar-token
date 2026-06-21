@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GAR Token - Official</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #FFD700;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .token-info {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .contract {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+        .btn {
+            background: #FFD700;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="token-info">
+        <h1>🪙 GAR Token</h1>
+        <p>Official token of GAR Miner Game</p>
+        
+        <h3>Contract Address:</h3>
+        <div class="contract">0x... ваш адрес контракта</div>
+        
+        <h3>Token Info:</h3>
+        <p>📊 Total Supply: 1,000,000,000 GAR</p>
+        <p>🌐 Network: BSC Testnet</p>
+        <p>💱 DEX: PancakeSwap Testnet</p>
+        
+        <a href="https://t.me/GARMinerBot" class="btn">🎮 Play Game</a>
+        <a href="https://testnet.bscscan.com/token/0x..." class="btn">📊 Explorer</a>
+        
+        <h3>How to Get GAR:</h3>
+        <p>1. Play GAR Miner Game</p>
+        <p>2. Mine tokens in Telegram</p>
+        <p>3. Trade on PancakeSwap</p>
+    </div>
+</body>
+</html>
