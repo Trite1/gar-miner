@@ -8,199 +8,242 @@
 </head>
 <body>
     <div class="container">
-        <!-- Шапка с информацией о майнере -->
-        <div class="header">
-            <div class="miner-profile">
-                <div class="miner-avatar">⛏️</div>
-                <div class="miner-details">
-                    <div class="miner-name" id="minerName">GAR Майнер</div>
-                    <div class="miner-rank" id="minerRank">Новичок</div>
-                </div>
+        <!-- Логотип GAR -->
+        <div class="gar-logo">
+            <div class="logo-circle">
+                <span class="logo-text">GAR</span>
             </div>
-            <div class="network-status">
-                <div class="status-dot"></div>
-                <span>GAR Network Online</span>
+            <div class="logo-glow"></div>
+        </div>
+
+        <!-- Информация о майнере -->
+        <div class="miner-info">
+            <div class="miner-avatar">⛏️</div>
+            <div>
+                <div class="miner-name" id="minerName">GAR Майнер</div>
+                <div class="miner-level" id="minerLevel">Ранг: Новичок</div>
+            </div>
+            <div class="balance-display">
+                <div class="gar-balance-mini">
+                    <span class="gar-icon-mini">🪙</span>
+                    <span id="headerBalance">0.00</span>
+                </div>
+                <div class="gram-balance-mini">
+                    <span class="gram-icon-mini">💎</span>
+                    <span id="headerGram">0.00</span>
+                </div>
             </div>
         </div>
 
-        <!-- Баланс GAR -->
-        <div class="balance-section">
-            <div class="gar-logo">
-                <div class="gar-coin">🪙</div>
-                <div class="gar-glow"></div>
+        <!-- Балансы -->
+        <div class="balances-container">
+            <div class="balance-card gar-card">
+                <div class="balance-icon">🪙</div>
+                <div class="balance-info">
+                    <div class="balance-label">GAR COIN</div>
+                    <div class="balance-value" id="balance">0.00</div>
+                    <div class="balance-usd" id="garUsd">≈ $0.00 USD</div>
+                </div>
             </div>
-            <div class="balance-display">
-                <div class="balance-amount" id="balance">0.00</div>
-                <div class="balance-currency">GAR</div>
+            
+            <div class="balance-card gram-card">
+                <div class="balance-icon">💎</div>
+                <div class="balance-info">
+                    <div class="balance-label">GRAM</div>
+                    <div class="balance-value" id="gramBalance">0.00</div>
+                    <div class="balance-usd">Валюта улучшений</div>
+                </div>
             </div>
-            <div class="balance-usd" id="usdValue">≈ $0.00 USD</div>
-            <div class="gar-rate">1 GAR = $0.50 USD</div>
         </div>
 
         <!-- Статистика майнинга -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">⚡</div>
+        <div class="mining-stats">
+            <div class="stat-item">
                 <div class="stat-label">Мощность</div>
-                <div class="stat-value" id="hashPower">1 GH/s</div>
+                <div class="stat-value" id="power">1 GH/s</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">💎</div>
+            <div class="stat-item">
+                <div class="stat-label">Добыто GAR</div>
+                <div class="stat-value" id="totalMined">0</div>
+            </div>
+            <div class="stat-item">
                 <div class="stat-label">Блоков</div>
-                <div class="stat-value" id="blocksMined">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔥</div>
-                <div class="stat-label">Энергия</div>
-                <div class="stat-value" id="energyLevel">100%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-label">Сложность</div>
-                <div class="stat-value" id="difficulty">1x</div>
+                <div class="stat-value" id="blocks">0</div>
             </div>
         </div>
 
-        <!-- Прогресс блока -->
+        <!-- Прогресс до следующего блока -->
         <div class="block-progress">
             <div class="progress-header">
-                <span>⛓️ Майнинг блока #<span id="blockNumber">0</span></span>
-                <span id="blockProgress">0%</span>
+                <span>Прогресс блока GAR</span>
+                <span id="progressPercent">0%</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="block-reward">Награда: <span id="blockReward">50 GAR</span></div>
+            <div class="block-reward">Награда: 50 GAR + 5 GRAM</div>
         </div>
 
-        <!-- Кнопка майнинга -->
-        <div class="mining-area">
+        <!-- Основная кнопка майнинга -->
+        <div class="miner-area">
             <button class="mine-button" id="mineButton">
-                <div class="button-content">
-                    <div class="button-icon">⛏️</div>
-                    <div class="button-text">МАЙНИТЬ GAR</div>
-                    <div class="button-subtext">Кликни для добычи</div>
+                <div class="mine-button-inner">
+                    <span class="mine-icon">⚒️</span>
+                    <span class="mine-text">МАЙНИТЬ GAR</span>
                 </div>
-                <div class="button-particles">
-                    <span class="particle"></span>
-                    <span class="particle"></span>
-                    <span class="particle"></span>
+                <div class="mine-particles">
+                    <span class="particle">✦</span>
+                    <span class="particle">✦</span>
+                    <span class="particle">✦</span>
                 </div>
             </button>
-            <div class="mining-effect" id="miningEffect">+0.01 GAR</div>
-            
-            <!-- Кнопка буста -->
-            <button class="boost-button" id="boostButton">
-                <span>⚡ БУСТ x2</span>
-                <span class="boost-timer" id="boostTimer"></span>
-            </button>
+            <div class="mine-effect" id="mineEffect">+1 GAR</div>
         </div>
 
-        <!-- Оборудование для майнинга GAR -->
-        <div class="section">
-            <h2 class="section-title">🖥️ Майнинг Оборудование</h2>
+        <!-- GAR оборудование (покупается за GAR) -->
+        <div class="equipment-section">
+            <h3>🔧 GAR Оборудование</h3>
             
-            <div class="equipment-item">
-                <div class="equipment-left">
-                    <div class="equipment-icon">💻</div>
-                    <div class="equipment-info">
-                        <div class="equipment-name">GAR Базовый Майнер</div>
-                        <div class="equipment-spec">+10 GH/s</div>
-                        <div class="equipment-count" id="basicCount">x0</div>
-                    </div>
+            <div class="equipment-card">
+                <div class="equipment-icon">💻</div>
+                <div class="equipment-info">
+                    <div class="equipment-name">GAR Miner V1</div>
+                    <div class="equipment-description">Базовый майнер GAR</div>
+                    <div class="equipment-stats">+5 GH/s</div>
                 </div>
-                <button class="equipment-buy" id="buyBasic">
-                    <span class="buy-price">100 GAR</span>
-                    <span class="buy-action">Купить</span>
+                <button class="buy-button gar-buy" id="buyV1">
+                    <span class="buy-cost">10 GAR</span>
                 </button>
             </div>
 
-            <div class="equipment-item">
-                <div class="equipment-left">
-                    <div class="equipment-icon">⚙️</div>
-                    <div class="equipment-info">
-                        <div class="equipment-name">GAR Про Майнер</div>
-                        <div class="equipment-spec">+50 GH/s</div>
-                        <div class="equipment-count" id="proCount">x0</div>
-                    </div>
+            <div class="equipment-card">
+                <div class="equipment-icon">🖥️</div>
+                <div class="equipment-info">
+                    <div class="equipment-name">GAR Miner V2</div>
+                    <div class="equipment-description">Продвинутый майнер</div>
+                    <div class="equipment-stats">+25 GH/s</div>
                 </div>
-                <button class="equipment-buy" id="buyPro">
-                    <span class="buy-price">500 GAR</span>
-                    <span class="buy-action">Купить</span>
+                <button class="buy-button gar-buy" id="buyV2">
+                    <span class="buy-cost">50 GAR</span>
                 </button>
             </div>
 
-            <div class="equipment-item">
-                <div class="equipment-left">
-                    <div class="equipment-icon">🏭</div>
-                    <div class="equipment-info">
-                        <div class="equipment-name">GAR Ферма</div>
-                        <div class="equipment-spec">+250 GH/s</div>
-                        <div class="equipment-count" id="farmCount">x0</div>
-                    </div>
+            <div class="equipment-card">
+                <div class="equipment-icon">🏭</div>
+                <div class="equipment-info">
+                    <div class="equipment-name">GAR Farm</div>
+                    <div class="equipment-description">Ферма для майнинга</div>
+                    <div class="equipment-stats">+100 GH/s</div>
                 </div>
-                <button class="equipment-buy" id="buyFarm">
-                    <span class="buy-price">2500 GAR</span>
-                    <span class="buy-action">Купить</span>
+                <button class="buy-button gar-buy" id="buyFarm">
+                    <span class="buy-cost">200 GAR</span>
+                </button>
+            </div>
+
+            <div class="equipment-card">
+                <div class="equipment-icon">⚡</div>
+                <div class="equipment-info">
+                    <div class="equipment-name">GAR Quantum</div>
+                    <div class="equipment-description">Квантовый майнер</div>
+                    <div class="equipment-stats">+500 GH/s</div>
+                </div>
+                <button class="buy-button gar-buy" id="buyQuantum">
+                    <span class="buy-cost">1000 GAR</span>
                 </button>
             </div>
         </div>
 
-        <!-- Улучшения GAR -->
-        <div class="section">
-            <h2 class="section-title">🔧 Улучшения GAR</h2>
+        <!-- GAR улучшения (покупаются за GRAM) -->
+        <div class="upgrades-section">
+            <h3>⚡ GAR Улучшения (за GRAM)</h3>
+            <div class="gram-info">
+                <span class="info-icon">ℹ️</span>
+                <span>Отправьте GRAM на адрес для покупки улучшений</span>
+            </div>
+            <div class="wallet-address" id="walletAddress">
+                <span class="address-text">UQChG5EgS8Evty9pSf-3GKxVRIeWqQ70jjWo_xo-YABWknbO</span>
+                <button class="copy-button" id="copyAddress">📋 Копировать</button>
+            </div>
             
-            <div class="upgrade-item">
-                <div class="upgrade-left">
-                    <div class="upgrade-icon">🔋</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">GAR Энергоячейка</div>
-                        <div class="upgrade-desc">+50% к энергии</div>
-                    </div>
+            <div class="upgrade-card">
+                <div class="upgrade-icon">🔧</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Разгон GAR</div>
+                    <div class="upgrade-description">+25% к мощности</div>
                 </div>
-                <button class="upgrade-buy" id="buyEnergy">
-                    <span class="buy-price">200 GAR</span>
+                <button class="upgrade-button gram-buy" id="overclock" data-gram="10">
+                    <span class="upgrade-cost">💎 10 GRAM</span>
                 </button>
             </div>
 
-            <div class="upgrade-item">
-                <div class="upgrade-left">
-                    <div class="upgrade-icon">🚀</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">GAR Ускоритель</div>
-                        <div class="upgrade-desc">x2 к добыче навсегда</div>
-                    </div>
+            <div class="upgrade-card">
+                <div class="upgrade-icon">❄️</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">GAR Охлаждение</div>
+                    <div class="upgrade-description">+50% к добыче</div>
                 </div>
-                <button class="upgrade-buy" id="buyAccelerator">
-                    <span class="buy-price">1000 GAR</span>
+                <button class="upgrade-button gram-buy" id="cooling" data-gram="25">
+                    <span class="upgrade-cost">💎 25 GRAM</span>
                 </button>
             </div>
 
-            <div class="upgrade-item">
-                <div class="upgrade-left">
-                    <div class="upgrade-icon">💡</div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-name">GAR Оптимизатор</div>
-                        <div class="upgrade-desc">Автомайнинг +5 GAR/сек</div>
-                    </div>
+            <div class="upgrade-card">
+                <div class="upgrade-icon">💎</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">GAR Кристалл</div>
+                    <div class="upgrade-description">x2 множитель GAR</div>
                 </div>
-                <button class="upgrade-buy" id="buyOptimizer">
-                    <span class="buy-price">5000 GAR</span>
+                <button class="upgrade-button gram-buy" id="crystal" data-gram="50">
+                    <span class="upgrade-cost">💎 50 GRAM</span>
                 </button>
             </div>
         </div>
 
-        <!-- Транзакции GAR -->
-        <div class="section">
-            <h2 class="section-title">📜 История GAR</h2>
-            <div class="transactions-container" id="transactionsContainer">
-                <div class="transaction-item">
-                    <div class="transaction-icon">🟢</div>
-                    <div class="transaction-info">
-                        <div class="transaction-name">GAR Network</div>
-                        <div class="transaction-time">Только что</div>
-                    </div>
-                    <div class="transaction-amount positive">+0.00 GAR</div>
+        <!-- Пополнение GRAM -->
+        <div class="deposit-section">
+            <h3>💳 Пополнить GRAM</h3>
+            <div class="deposit-card">
+                <div class="deposit-info">
+                    <p>Отправьте GRAM на адрес:</p>
+                    <p class="deposit-address">UQChG5EgS8Evty9pSf-3GKxVRIeWqQ70jjWo_xo-YABWknbO</p>
+                </div>
+                <div class="deposit-amounts">
+                    <button class="deposit-btn" data-amount="10">10 GRAM</button>
+                    <button class="deposit-btn" data-amount="25">25 GRAM</button>
+                    <button class="deposit-btn" data-amount="50">50 GRAM</button>
+                    <button class="deposit-btn" data-amount="100">100 GRAM</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Лог майнинга GAR -->
+        <div class="mining-log">
+            <h3>📋 GAR Лог</h3>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">🟢 GAR майнер активирован</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для подтверждения GRAM платежа -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💎 Оплата GRAM</h3>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-details">
+                    <p>Сумма: <span id="modalAmount">0</span> GRAM</p>
+                    <p>Улучшение: <span id="modalUpgrade">-</span></p>
+                </div>
+                <div class="payment-address">
+                    <p>Адрес для отправки:</p>
+                    <p class="address-highlight">UQChG5EgS8Evty9pSf-3GKxVRIeWqQ70jjWo_xo-YABWknbO</p>
+                </div>
+                <div class="payment-actions">
+                    <button class="confirm-btn" id="confirmPayment">✅ Подтвердить оплату</button>
+                    <button class="cancel-btn" id="cancelPayment">❌ Отмена</button>
                 </div>
             </div>
         </div>
