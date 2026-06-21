@@ -1,14 +1,13 @@
-// Инициализация Telegram Web App
+// Telegram Web App
 const tg = window.Telegram.WebApp;
 tg.expand();
 
 // Адрес для GRAM платежей
 const GRAM_WALLET = 'UQChG5EgS8Evty9pSf-3GKxVRIeWqQ70jjWo_xo-YABWknbO';
 
-// Состояние GAR майнера
-let garState = {
+// Состояние игры
+let gameState = {
     balance: 0,
-    gramBalance: 0,
     hashrate: 1,
     equipment: {
         v1: 0,
@@ -22,436 +21,310 @@ let garState = {
         crystal: false
     },
     blocks: 0,
-    totalMined: 0,
-    pendingPayments: [] // Ожидающие платежи GRAM
+    totalMined: 0
 };
 
-// Конфигурация
-const GAR_CONFIG = {
-    USD_PRICE: 0.05,
+// Конфиг
+const CONFIG = {
+    GAR_USD: 0.05,
     BLOCK_REWARD: 50,
-    GRAM_BLOCK_REWARD: 5,
     BLOCK_DIFFICULTY: 1000
 };
 
-// Мощности оборудования
-const EQUIPMENT_POWER = {
-    v1: 5,
-    v2: 25,
-    farm: 100,
-    quantum: 500
+// Мощность оборудования
+const EQUIP_POWER = { v1: 5, v2: 25, farm: 100, quantum: 500 };
+
+// Цена оборудования в GAR (уменьшена в 10 раз)
+const EQUIP_COST = { 
+    v1: 1,
+    v2: 5,
+    farm: 20,
+    quantum: 100
 };
 
-// Стоимость оборудования в GAR
-const EQUIPMENT_COST = {
-    v1: 10,
-    v2: 50,
-    farm: 200,
-    quantum: 1000
+// Цена улучшений в GRAM (уменьшена в 10 раз)
+const UPGRADE_GRAM = { 
+    overclock: 1,   // было 10
+    cooling: 2.5,   // было 25
+    crystal: 5      // было 50
 };
 
-// Стоимость улучшений в GRAM
-const UPGRADE_COST_GRAM = {
-    overclock: 10,
-    cooling: 25,
-    crystal: 50
-};
-
-// Ранги майнера
+// Ранги
 const RANKS = [
-    'Новичок',
-    'Любитель',
-    'Опытный',
-    'Профессионал',
-    'Эксперт',
-    'Мастер',
-    'Грандмастер',
+    'Новичок', 
+    'Любитель', 
+    'Опытный', 
+    'Профессионал', 
+    'Эксперт', 
+    'Мастер', 
+    'Грандмастер', 
     'Легенда GAR'
 ];
 
-// Загрузка сохранений
+// Текущий выбранный апгрейд для модалки
+let pendingUpgrade = null;
+
+// === Сохранение и загрузка ===
 function loadGame() {
-    const saved = localStorage.getItem('garMinerState');
+    const saved = localStorage.getItem('garMiner');
     if (saved) {
-        garState = { ...garState, ...JSON.parse(saved) };
+        gameState = { ...gameState, ...JSON.parse(saved) };
     }
 }
 
-// Сохранение
 function saveGame() {
-    localStorage.setItem('garMinerState', JSON.stringify(garState));
+    localStorage.setItem('garMiner', JSON.stringify(gameState));
 }
 
-// Расчет хешрейта
-function calculateHashrate() {
-    let baseHashrate = 1;
-    
-    baseHashrate += garState.equipment.v1 * EQUIPMENT_POWER.v1;
-    baseHashrate += garState.equipment.v2 * EQUIPMENT_POWER.v2;
-    baseHashrate += garState.equipment.farm * EQUIPMENT_POWER.farm;
-    baseHashrate += garState.equipment.quantum * EQUIPMENT_POWER.quantum;
-    
-    if (garState.upgrades.overclock) {
-        baseHashrate *= 1.25;
-    }
-    
-    if (garState.upgrades.crystal) {
-        baseHashrate *= 2;
-    }
-    
-    return Math.floor(baseHashrate);
+// === Расчеты ===
+function getHashrate() {
+    let h = 1;
+    h += gameState.equipment.v1 * EQUIP_POWER.v1;
+    h += gameState.equipment.v2 * EQUIP_POWER.v2;
+    h += gameState.equipment.farm * EQUIP_POWER.farm;
+    h += gameState.equipment.quantum * EQUIP_POWER.quantum;
+    if (gameState.upgrades.overclock) h *= 1.25;
+    if (gameState.upgrades.crystal) h *= 2;
+    return Math.floor(h);
 }
 
-// Расчет ранга
-function calculateRank() {
-    const totalPower = calculateHashrate();
-    if (totalPower >= 10000) return 7;
-    if (totalPower >= 5000) return 6;
-    if (totalPower >= 2000) return 5;
-    if (totalPower >= 1000) return 4;
-    if (totalPower >= 500) return 3;
-    if (totalPower >= 100) return 2;
+function getRank() {
+    const p = getHashrate();
+    if (p >= 10000) return 7;
+    if (p >= 5000) return 6;
+    if (p >= 2000) return 5;
+    if (p >= 1000) return 4;
+    if (p >= 500) return 3;
+    if (p >= 100) return 2;
     return 0;
 }
 
-// Добавление в лог
-function addLog(message) {
-    const logContainer = document.getElementById('logContainer');
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.textContent = `[GAR] ${message}`;
-    logContainer.insertBefore(entry, logContainer.firstChild);
-    
-    if (logContainer.children.length > 50) {
-        logContainer.removeChild(logContainer.lastChild);
-    }
+function fmt(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(2) + 'K';
+    if (n % 1 !== 0) return n.toFixed(1);
+    return Math.floor(n).toString();
 }
 
-// Форматирование чисел
-function formatNumber(num) {
-    if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
-    return Math.floor(num).toString();
+// === Лог ===
+function addLog(msg) {
+    const c = document.getElementById('logContainer');
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.textContent = `[GAR] ${msg}`;
+    c.insertBefore(div, c.firstChild);
+    if (c.children.length > 50) c.removeChild(c.lastChild);
 }
 
-// Открыть модальное окно оплаты
-function openPaymentModal(upgradeId, gramAmount, upgradeName) {
-    document.getElementById('modalAmount').textContent = gramAmount;
-    document.getElementById('modalUpgrade').textContent = upgradeName;
-    
-    const modal = document.getElementById('paymentModal');
-    modal.classList.add('show');
-    
-    // Сохраняем данные для подтверждения
-    modal.dataset.upgradeId = upgradeId;
-    modal.dataset.gramAmount = gramAmount;
-}
-
-// Закрыть модальное окно
-function closePaymentModal() {
-    const modal = document.getElementById('paymentModal');
-    modal.classList.remove('show');
-}
-
-// Симуляция проверки платежа GRAM
-async function checkGramPayment(amount) {
-    // В реальном приложении здесь должна быть проверка через TON API
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            // Симулируем успешный платеж
-            resolve(true);
-        }, 1500);
-    });
-}
-
-// Подтверждение платежа GRAM
-async function confirmGramPayment(upgradeId, gramAmount) {
-    addLog(`💎 Проверка платежа ${gramAmount} GRAM...`);
-    
-    // Показываем уведомление
-    tg.showPopup({
-        title: 'Проверка платежа',
-        message: `Проверяем поступление ${gramAmount} GRAM на адрес:\n${GRAM_WALLET}`,
-        buttons: [{type: 'ok'}]
-    });
-    
-    try {
-        const paymentVerified = await checkGramPayment(gramAmount);
-        
-        if (paymentVerified) {
-            garState.gramBalance += gramAmount;
-            
-            // Применяем улучшение
-            switch(upgradeId) {
-                case 'overclock':
-                    garState.upgrades.overclock = true;
-                    addLog('🔧 Разгон GAR активирован! (+25% к мощности)');
-                    break;
-                case 'cooling':
-                    garState.upgrades.cooling = true;
-                    addLog('❄️ GAR Охлаждение установлено! (+50% к добыче)');
-                    break;
-                case 'crystal':
-                    garState.upgrades.crystal = true;
-                    addLog('💎 GAR Кристалл активирован! (x2 множитель)');
-                    break;
-            }
-            
-            tg.showPopup({
-                title: '✅ Успешно!',
-                message: `Улучшение активировано! Баланс GRAM: ${garState.gramBalance.toFixed(1)}`,
-                buttons: [{type: 'ok'}]
-            });
-            
-            updateUI();
-            saveGame();
-        } else {
-            tg.showPopup({
-                title: '❌ Ошибка',
-                message: 'Платеж не найден. Пожалуйста, отправьте GRAM и попробуйте снова.',
-                buttons: [{type: 'ok'}]
-            });
-        }
-    } catch (error) {
-        tg.showPopup({
-            title: '❌ Ошибка',
-            message: 'Произошла ошибка при проверке платежа.',
-            buttons: [{type: 'ok'}]
-        });
-    }
-    
-    closePaymentModal();
-}
-
-// Обновление интерфейса
+// === UI ===
 function updateUI() {
-    const hashrate = calculateHashrate();
-    const rank = calculateRank();
-    
-    // Балансы
-    document.getElementById('balance').textContent = garState.balance.toFixed(2);
-    document.getElementById('gramBalance').textContent = garState.gramBalance.toFixed(1);
-    document.getElementById('headerBalance').textContent = garState.balance.toFixed(2);
-    document.getElementById('headerGram').textContent = garState.gramBalance.toFixed(1);
-    document.getElementById('garUsd').textContent = 
-        `≈ $${(garState.balance * GAR_CONFIG.USD_PRICE).toFixed(2)} USD`;
-    
-    // Статистика
-    document.getElementById('power').textContent = `${formatNumber(hashrate)} GH/s`;
-    document.getElementById('totalMined').textContent = formatNumber(garState.totalMined);
-    document.getElementById('blocks').textContent = garState.blocks;
+    const hr = getHashrate();
+    const rank = getRank();
+
+    document.getElementById('balance').textContent = gameState.balance.toFixed(2);
+    document.getElementById('garUsd').textContent = `≈ $${(gameState.balance * CONFIG.GAR_USD).toFixed(2)} USD`;
+    document.getElementById('hashrate').textContent = fmt(hr);
+    document.getElementById('power').textContent = `${fmt(hr)} GH/s`;
+    document.getElementById('totalMined').textContent = fmt(gameState.totalMined);
+    document.getElementById('blocks').textContent = gameState.blocks;
     document.getElementById('minerLevel').textContent = `Ранг: ${RANKS[rank]}`;
-    
+
     // Прогресс блока
-    const progress = (garState.totalMined % GAR_CONFIG.BLOCK_DIFFICULTY) / GAR_CONFIG.BLOCK_DIFFICULTY * 100;
+    const progress = (gameState.totalMined % CONFIG.BLOCK_DIFFICULTY) / CONFIG.BLOCK_DIFFICULTY * 100;
     document.getElementById('progressPercent').textContent = `${Math.floor(progress)}%`;
     document.getElementById('progressFill').style.width = `${progress}%`;
-    
+
     // Кнопки оборудования (GAR)
-    updateBuyButton('buyV1', EQUIPMENT_COST.v1, 'gar');
-    updateBuyButton('buyV2', EQUIPMENT_COST.v2, 'gar');
-    updateBuyButton('buyFarm', EQUIPMENT_COST.farm, 'gar');
-    updateBuyButton('buyQuantum', EQUIPMENT_COST.quantum, 'gar');
-    
+    setBtn('buyV1', gameState.balance >= EQUIP_COST.v1);
+    setBtn('buyV2', gameState.balance >= EQUIP_COST.v2);
+    setBtn('buyFarm', gameState.balance >= EQUIP_COST.farm);
+    setBtn('buyQuantum', gameState.balance >= EQUIP_COST.quantum);
+
     // Кнопки улучшений (GRAM)
-    updateUpgradeButton('overclock', UPGRADE_COST_GRAM.overclock, garState.upgrades.overclock);
-    updateUpgradeButton('cooling', UPGRADE_COST_GRAM.cooling, garState.upgrades.cooling);
-    updateUpgradeButton('crystal', UPGRADE_COST_GRAM.crystal, garState.upgrades.crystal);
-}
+    setUpgradeBtn('overclock', gameState.upgrades.overclock, UPGRADE_GRAM.overclock);
+    setUpgradeBtn('cooling', gameState.upgrades.cooling, UPGRADE_GRAM.cooling);
+    setUpgradeBtn('crystal', gameState.upgrades.crystal, UPGRADE_GRAM.crystal);
 
-function updateBuyButton(buttonId, cost, currency) {
-    const button = document.getElementById(buttonId);
-    if (currency === 'gar') {
-        button.disabled = garState.balance < cost;
-    } else if (currency === 'gram') {
-        button.disabled = garState.gramBalance < cost;
+    // Telegram user
+    if (tg.initDataUnsafe?.user) {
+        document.getElementById('minerName').textContent = tg.initDataUnsafe.user.first_name + ' Майнер';
     }
 }
 
-function updateUpgradeButton(buttonId, cost, purchased) {
-    const button = document.getElementById(buttonId);
+function setBtn(id, enabled) {
+    document.getElementById(id).disabled = !enabled;
+}
+
+function setUpgradeBtn(id, purchased, cost) {
+    const btn = document.getElementById(id);
     if (purchased) {
-        button.textContent = '✓ Куплено';
-        button.disabled = true;
+        btn.textContent = '✓ Куплено';
+        btn.disabled = true;
     } else {
-        button.textContent = `💎 ${cost} GRAM`;
-        button.disabled = false; // Всегда доступна покупка за GRAM
+        btn.innerHTML = `<span class="upgrade-cost">💎 ${cost} GRAM</span>`;
+        btn.disabled = false;
     }
 }
 
-// Обработка майнинга
-document.getElementById('mineButton').addEventListener('click', (e) => {
-    const hashrate = calculateHashrate();
-    const mined = Math.max(0.1, hashrate / 10);
-    
-    garState.balance += mined;
-    garState.totalMined += mined;
-    
+// === Майнинг ===
+document.getElementById('mineButton').addEventListener('click', () => {
+    const hr = getHashrate();
+    const mined = Math.max(0.1, hr / 10);
+    gameState.balance += mined;
+    gameState.totalMined += mined;
+
     // Эффект
-    const effect = document.getElementById('mineEffect');
-    effect.textContent = `+${mined.toFixed(1)} GAR`;
-    effect.classList.remove('show');
-    void effect.offsetWidth;
-    effect.classList.add('show');
-    
-    // Шанс найти блок
+    const fx = document.getElementById('mineEffect');
+    fx.textContent = `+${mined.toFixed(1)} GAR`;
+    fx.classList.remove('show');
+    void fx.offsetWidth;
+    fx.classList.add('show');
+
+    // Блок
     if (Math.random() < 0.05) {
-        garState.blocks++;
-        const blockReward = GAR_CONFIG.BLOCK_REWARD;
-        const gramReward = GAR_CONFIG.GRAM_BLOCK_REWARD;
-        garState.balance += blockReward;
-        garState.gramBalance += gramReward;
-        addLog(`🎉 БЛОК GAR НАЙДЕН! +${blockReward} GAR +${gramReward} GRAM`);
+        gameState.blocks++;
+        gameState.balance += CONFIG.BLOCK_REWARD;
+        addLog(`🎉 БЛОК НАЙДЕН! +${CONFIG.BLOCK_REWARD} GAR`);
     }
-    
-    // Случайный лог
+
     if (Math.random() < 0.15) {
-        const messages = [
+        const msgs = [
             `⛏️ Добыто ${mined.toFixed(1)} GAR`,
-            `💎 Хешрейт: ${formatNumber(hashrate)} GH/s`,
-            `🔄 Транзакций GAR: ${Math.floor(Math.random() * 50)}`
+            `⚡ Хешрейт: ${fmt(hr)} GH/s`,
+            `🔄 Транзакций: ${Math.floor(Math.random() * 50)}`
         ];
-        addLog(messages[Math.floor(Math.random() * messages.length)]);
+        addLog(msgs[Math.floor(Math.random() * msgs.length)]);
     }
-    
+
     updateUI();
     saveGame();
-    
-    if (navigator.vibrate) {
-        navigator.vibrate(15);
-    }
+    if (navigator.vibrate) navigator.vibrate(15);
 });
 
-// Покупка оборудования за GAR
-document.getElementById('buyV1').addEventListener('click', () => {
-    if (garState.balance >= EQUIPMENT_COST.v1) {
-        garState.balance -= EQUIPMENT_COST.v1;
-        garState.equipment.v1++;
-        addLog('💻 GAR Miner V1 куплен (+5 GH/s)');
+// === Покупка оборудования за GAR ===
+document.getElementById('buyV1').addEventListener('click', () => buyEquip('v1'));
+document.getElementById('buyV2').addEventListener('click', () => buyEquip('v2'));
+document.getElementById('buyFarm').addEventListener('click', () => buyEquip('farm'));
+document.getElementById('buyQuantum').addEventListener('click', () => buyEquip('quantum'));
+
+function buyEquip(type) {
+    if (gameState.balance >= EQUIP_COST[type]) {
+        gameState.balance -= EQUIP_COST[type];
+        gameState.equipment[type]++;
+        const names = { 
+            v1: 'GAR Miner V1 (+5 GH/s)', 
+            v2: 'GAR Miner V2 (+25 GH/s)', 
+            farm: 'GAR Farm (+100 GH/s)', 
+            quantum: 'GAR Quantum (+500 GH/s)' 
+        };
+        addLog(`✅ Куплен: ${names[type]} за ${EQUIP_COST[type]} GAR`);
         updateUI();
         saveGame();
     }
+}
+
+// === Модальное окно GRAM ===
+function openGramModal(upgradeId) {
+    pendingUpgrade = upgradeId;
+    document.getElementById('modalUpgradeName').textContent = 
+        { overclock: 'Разгон GAR', cooling: 'GAR Охлаждение', crystal: 'GAR Кристалл' }[upgradeId];
+    document.getElementById('modalGramAmount').textContent = UPGRADE_GRAM[upgradeId];
+    document.getElementById('paymentStatus').textContent = '';
+    document.getElementById('paymentStatus').className = 'modal-status';
+    document.getElementById('gramModal').classList.add('show');
+}
+
+function closeGramModal() {
+    document.getElementById('gramModal').classList.remove('show');
+    pendingUpgrade = null;
+}
+
+document.getElementById('overclock').addEventListener('click', () => openGramModal('overclock'));
+document.getElementById('cooling').addEventListener('click', () => openGramModal('cooling'));
+document.getElementById('crystal').addEventListener('click', () => openGramModal('crystal'));
+document.getElementById('closeModal').addEventListener('click', closeGramModal);
+document.getElementById('cancelModal').addEventListener('click', closeGramModal);
+
+// Закрытие по клику вне окна
+document.getElementById('gramModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('gramModal')) closeGramModal();
 });
 
-document.getElementById('buyV2').addEventListener('click', () => {
-    if (garState.balance >= EQUIPMENT_COST.v2) {
-        garState.balance -= EQUIPMENT_COST.v2;
-        garState.equipment.v2++;
-        addLog('🖥️ GAR Miner V2 куплен (+25 GH/s)');
+// === Проверка GRAM платежа ===
+document.getElementById('checkPayment').addEventListener('click', async () => {
+    if (!pendingUpgrade) return;
+
+    const statusEl = document.getElementById('paymentStatus');
+    statusEl.textContent = '⏳ Проверяем транзакцию...';
+    statusEl.className = 'modal-status loading';
+
+    // Имитация проверки (в реальности - запрос к TON API)
+    await new Promise(r => setTimeout(r, 2000));
+
+    // Симулируем успех (в реальности проверяем транзакцию)
+    const success = true; // Замените на реальную проверку
+
+    if (success) {
+        gameState.upgrades[pendingUpgrade] = true;
+        const names = { 
+            overclock: 'Разгон GAR (+25% мощности)', 
+            cooling: 'GAR Охлаждение (+50% добычи)', 
+            crystal: 'GAR Кристалл (x2 множитель)' 
+        };
+        addLog(`💎 Оплачено GRAM! ${names[pendingUpgrade]}`);
+        statusEl.textContent = '✅ Платеж подтвержден! Улучшение активировано.';
+        statusEl.className = 'modal-status success';
+        
         updateUI();
         saveGame();
+
+        setTimeout(closeGramModal, 1500);
+    } else {
+        statusEl.textContent = '❌ Платеж не найден. Отправьте GRAM и попробуйте снова.';
+        statusEl.className = 'modal-status error';
     }
 });
 
-document.getElementById('buyFarm').addEventListener('click', () => {
-    if (garState.balance >= EQUIPMENT_COST.farm) {
-        garState.balance -= EQUIPMENT_COST.farm;
-        garState.equipment.farm++;
-        addLog('🏭 GAR Farm куплена (+100 GH/s)');
-        updateUI();
-        saveGame();
-    }
-});
-
-document.getElementById('buyQuantum').addEventListener('click', () => {
-    if (garState.balance >= EQUIPMENT_COST.quantum) {
-        garState.balance -= EQUIPMENT_COST.quantum;
-        garState.equipment.quantum++;
-        addLog('⚡ GAR Quantum куплен (+500 GH/s)');
-        updateUI();
-        saveGame();
-    }
-});
-
-// Покупка улучшений за GRAM
-document.getElementById('overclock').addEventListener('click', () => {
-    if (!garState.upgrades.overclock) {
-        openPaymentModal('overclock', UPGRADE_COST_GRAM.overclock, 'Разгон GAR');
-    }
-});
-
-document.getElementById('cooling').addEventListener('click', () => {
-    if (!garState.upgrades.cooling) {
-        openPaymentModal('cooling', UPGRADE_COST_GRAM.cooling, 'GAR Охлаждение');
-    }
-});
-
-document.getElementById('crystal').addEventListener('click', () => {
-    if (!garState.upgrades.crystal) {
-        openPaymentModal('crystal', UPGRADE_COST_GRAM.crystal, 'GAR Кристалл');
-    }
-});
-
-// Копирование адреса
-document.getElementById('copyAddress').addEventListener('click', () => {
+// === Копирование адреса ===
+document.getElementById('copyWallet').addEventListener('click', () => {
     navigator.clipboard.writeText(GRAM_WALLET).then(() => {
-        tg.showPopup({
-            title: '📋 Скопировано!',
-            message: 'Адрес кошелька скопирован в буфер обмена',
-            buttons: [{type: 'ok'}]
-        });
+        const btn = document.getElementById('copyWallet');
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = '📋', 1500);
     });
 });
 
-// Модальное окно
-document.getElementById('closeModal').addEventListener('click', closePaymentModal);
-document.getElementById('cancelPayment').addEventListener('click', closePaymentModal);
-
-document.getElementById('confirmPayment').addEventListener('click', () => {
-    const modal = document.getElementById('paymentModal');
-    const upgradeId = modal.dataset.upgradeId;
-    const gramAmount = parseInt(modal.dataset.gramAmount);
-    confirmGramPayment(upgradeId, gramAmount);
-});
-
-// Кнопки пополнения GRAM
-document.querySelectorAll('.deposit-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const amount = parseInt(button.dataset.amount);
-        openPaymentModal('deposit', amount, `Пополнение ${amount} GRAM`);
-    });
-});
-
-// Автомайнинг
+// === Автомайнинг ===
 setInterval(() => {
-    const hashrate = calculateHashrate();
-    let autoMine = hashrate / 100;
+    const hr = getHashrate();
+    let auto = hr / 100;
+    if (gameState.upgrades.cooling) auto *= 1.5;
     
-    if (garState.upgrades.cooling) {
-        autoMine *= 1.5;
-    }
-    
-    if (autoMine > 0) {
-        garState.balance += autoMine;
-        garState.totalMined += autoMine;
-        
-        // Шанс блока при автомайнинге
+    if (auto > 0) {
+        gameState.balance += auto;
+        gameState.totalMined += auto;
+
         if (Math.random() < 0.01) {
-            garState.blocks++;
-            garState.balance += GAR_CONFIG.BLOCK_REWARD;
-            garState.gramBalance += GAR_CONFIG.GRAM_BLOCK_REWARD;
-            addLog('🎉 АВТО-БЛОК GAR НАЙДЕН! +50 GAR +5 GRAM');
+            gameState.blocks++;
+            gameState.balance += CONFIG.BLOCK_REWARD;
+            addLog('🎉 АВТО-БЛОК НАЙДЕН! +50 GAR');
         }
-        
+
         updateUI();
         saveGame();
     }
 }, 1000);
 
-// Telegram Main Button для пополнения
-tg.MainButton.setText('💎 Пополнить GRAM');
+// === Telegram Main Button ===
+tg.MainButton.setText('💎 Открыть кошелек TON');
 tg.MainButton.show();
-
 tg.MainButton.onClick(() => {
-    tg.openLink(`https://t.me/tonkeeper?start=${GRAM_WALLET}`);
+    tg.openLink(`https://app.tonkeeper.com/transfer/${GRAM_WALLET}`);
 });
 
-// Инициализация
+// === Старт ===
 loadGame();
 updateUI();
-addLog('🟢 GAR майнер активирован');
-addLog(`💳 GRAM кошелек: ${GRAM_WALLET.substring(0, 20)}...`);
-
-// Настройка цвета темы Telegram
-tg.setHeaderColor('#FF6B35');
-tg.setBackgroundColor('#1a1a2e');
+addLog('🟢 GAR майнер запущен');
+addLog('💎 Улучшения покупаются за GRAM');
+addLog('💰 Все цены снижены в 10 раз!');
